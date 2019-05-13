@@ -75,7 +75,7 @@ def main():
     parser.add_argument("title", help="TV Series title")
     parser.add_argument("next_episode", help="Episode number to watch in format: sNNeNN")
     parser.add_argument("-o", "--once", action="store_true", default=False, help="Endless loop mode if not set")
-    parser.add_argument("-p", "--period", default=DEFAULT_CHECK_PERIOD, help="Check period")
+    parser.add_argument("-p", "--period", type=int, default=DEFAULT_CHECK_PERIOD, help="Check period")
     parser.add_argument("-d", "--debug", action="store_true", default=False, help="Debug mode")
     args = parser.parse_args()
 
