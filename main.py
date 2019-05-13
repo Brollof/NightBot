@@ -94,6 +94,11 @@ def main():
                 sender_email = data["sender"]["email"]
                 sender_password = data["sender"]["password"]
                 recipients = data["recipients"]
+                logging.debug(f"Sender: {sender_email}")
+                logging.debug(f"Recipients: {recipients}")
+
+                if not sender_email or not sender_password or not recipients:
+                    raise ValueError("Empty credentials or no recipients given!")
         except KeyError as e:
             logging.error(f"Corrupted credentials file: {credentials_fullpath}")
             logging.error(f"Field {e} not found")
