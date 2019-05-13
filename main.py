@@ -24,6 +24,8 @@ def send_email(sender_email, sender_password, recipients, message):
         server.login(sender_email, sender_password)
         logging.info("Sending email...")
         server.sendmail(sender_email, recipients, message)
+    logging.info("Email sent successfully.")
+
 
 def prepare_message(title, torrent_name, url):
     return f"""\
@@ -131,6 +133,7 @@ def main():
             logging.info("No loop mode, exiting")
             break
 
+        logging.info(f"Next check in {check_period} seconds.")
         sleep(check_period)
 
 if __name__ == '__main__':
