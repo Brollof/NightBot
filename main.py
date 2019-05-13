@@ -8,7 +8,7 @@ import smtplib, ssl
 import json
 import os
 
-DEFAULT_CHECK_PERIOD = 3 * 60 * 60 # seconds
+DEFAULT_CHECK_PERIOD = 3 * 60 * 60 # seconds, 3h
 SE_REGEX = re.compile(r"s(\d+)e(\d+)")
 LOG_FILENAME = "bot.log"
 LOCAL_HTML_FILENAME = "pb.html"
