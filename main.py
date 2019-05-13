@@ -40,9 +40,9 @@ def get_se(title):
         return int(match[1]), int(match[2])
     return None
 
-def check_new_episode(title, season, episode):
+def check_new_episode(title, season, episode, local=False):
     url = f"https://thepiratebay.asia/s/?q={title.replace(' ', '+')}&category=0&page=0&orderby=99"
-    if DEBUG:
+    if local:
         logging.info("Reading local html file...")
         with open(get_fullpath(LOCAL_HTML_FILENAME), 'r', encoding='utf-8') as file:
             html = file.read() 
@@ -66,27 +66,33 @@ def check_new_episode(title, season, episode):
     return None
 
 def main():
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format='[%(asctime)s] %(levelname)s: %(message)s',
-        datefmt='%d.%m.%Y %H:%M:%S',
-        handlers=[logging.FileHandler(get_fullpath(LOG_FILENAME)), logging.StreamHandler()])
-
-    logging.info("Night Bot started")
     parser = argparse.ArgumentParser()
     parser.add_argument("title", help="TV Series title")
     parser.add_argument("next_episode", help="Episode number to watch in format: sNNeNN")
     parser.add_argument("-o", "--once", action="store_true", default=False, help="Endless loop mode if not set")
     parser.add_argument("-p", "--period", type=int, default=DEFAULT_CHECK_PERIOD, help="Check period")
-    parser.add_argument("-d", "--debug", action="store_true", default=False, help="Debug mode")
+    parser.add_argument("-l", "--local", action="store_true", default=False, help="Parse local html file")
+    parser.add_argument("-c", "--console", action="store_true", default=False, help="Enables console logs")
     args = parser.parse_args()
 
     title = args.title
     se_raw = args.next_episode
     once = args.once
     check_period = args.period
-    global DEBUG
-    DEBUG = args.debug
+    local_html = args.local
+    enable_console = args.console
+
+    log_handlers = [logging.FileHandler(get_fullpath(LOG_FILENAME))]
+    if enable_console:
+        log_handlers.append(logging.StreamHandler())
+
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format='[%(asctime)s] %(levelname)s: %(message)s',
+        datefmt='%d.%m.%Y %H:%M:%S',
+        handlers=log_handlers)
+
+    logging.info("Night Bot started")
 
     credentials_fullpath = get_fullpath(CREDENTIALS_FILENAME)
     if os.path.exists(credentials_fullpath):
@@ -121,7 +127,7 @@ def main():
 
     logging.info(f"Checking periodically ({check_period} seconds) for '{title}' {se_raw}")
     while True:
-        ret = check_new_episode(title, season, episode)
+        ret = check_new_episode(title, season, episode, local_html)
         if ret:
             logging.info("New episode is available!")
             send_email(sender_email, sender_password, recipients, prepare_message(title, *ret))
